@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>Fleet Ledger</title>
+
+<!-- PWA / home screen -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#17181A" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Fleet Ledger" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-row">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#17181A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+      </div>
+      <div class="brand font-display">Fleet Ledger</div>
+    </div>
+    <div class="week-label font-mono" id="weekLabel">WEEK OF —</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <div class="tab active" id="tab-dashboard">
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-label font-mono">COLLECTED</div><div class="stat-value font-mono up" id="statCollected">$0</div></div>
+        <div class="stat-card"><div class="stat-label font-mono">EXPENSES</div><div class="stat-value font-mono down" id="statExpenses">$0</div></div>
+        <div class="stat-card"><div class="stat-label font-mono">NET</div><div class="stat-value font-mono" id="statNet">$0</div></div>
+      </div>
+
+      <div class="section-title font-display" id="manifestTitle">This week's manifest</div>
+      <div id="manifestList"></div>
+
+      <div class="section-head">
+        <div class="section-title font-display" style="margin:0;">Expenses this week</div>
+        <button class="link-btn" onclick="goTab('expenses')">View all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div id="weekExpenseList" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="tab" id="tab-drivers">
+      <div class="btn-row">
+        <div class="section-title font-display" style="margin:0;">Roster</div>
+        <button class="btn btn-yellow" onclick="openDriverModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-3px;margin-right:4px;"><path d="M12 5v14M5 12h14"/></svg>Add driver
+        </button>
+      </div>
+      <div id="driversList"></div>
+    </div>
+
+    <div class="tab" id="tab-expenses">
+      <div class="btn-row" style="margin-bottom:4px;">
+        <div class="section-title font-display" style="margin:0;">Expenses</div>
+        <button class="btn btn-yellow" onclick="openExpenseModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-3px;margin-right:4px;"><path d="M12 5v14M5 12h14"/></svg>Log expense
+        </button>
+      </div>
+      <div class="mono-muted" id="expenseTotal" style="margin-bottom:14px;">ALL-TIME TOTAL: $0</div>
+      <div id="allExpenseList"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-dashboard" onclick="goTab('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>DASHBOARD</span>
+    </button>
+    <button class="nav-btn" id="nav-drivers" onclick="goTab('drivers')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>DRIVERS</span>
+    </button>
+    <button class="nav-btn" id="nav-expenses" onclick="goTab('expenses')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+      <span>EXPENSES</span>
+    </button>
+  </div>
+
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
