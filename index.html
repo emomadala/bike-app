@@ -35,6 +35,18 @@
   <div class="content">
 
     <div class="tab active" id="tab-dashboard">
+
+      <div class="balance-card">
+        <div class="balance-label font-mono">TOTAL BALANCE</div>
+        <div class="balance-value font-mono" id="statBalance">$0</div>
+        <div class="balance-foot">
+          <span class="balance-note" id="balanceFormula">starting + collected \u2212 expenses</span>
+          <button class="link-btn" onclick="openAdjustModal()">Adjust balance \u2192</button>
+        </div>
+      </div>
+      <div id="adjustmentHistory"></div>
+
+      <div class="section-title font-display" style="margin-top:4px;">This week</div>
       <div class="stat-row">
         <div class="stat-card"><div class="stat-label font-mono">COLLECTED</div><div class="stat-value font-mono up" id="statCollected">$0</div></div>
         <div class="stat-card"><div class="stat-label font-mono">EXPENSES</div><div class="stat-value font-mono down" id="statExpenses">$0</div></div>

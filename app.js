@@ -1,5 +1,5 @@
 // ---------- storage ----------
-const LS_KEYS = { drivers: "fl_drivers", payments: "fl_payments", expenses: "fl_expenses" };
+const LS_KEYS = { drivers: "fl_drivers", payments: "fl_payments", expenses: "fl_expenses", adjustments: "fl_adjustments" };
 
 function load(key) {
   try {
@@ -20,10 +20,12 @@ function save(key, value) {
 let drivers = load(LS_KEYS.drivers);
 let payments = load(LS_KEYS.payments);
 let expenses = load(LS_KEYS.expenses);
+let adjustments = load(LS_KEYS.adjustments);
 
 function persistDrivers() { save(LS_KEYS.drivers, drivers); }
 function persistPayments() { save(LS_KEYS.payments, payments); }
 function persistExpenses() { save(LS_KEYS.expenses, expenses); }
+function persistAdjustments() { save(LS_KEYS.adjustments, adjustments); }
 
 // ---------- helpers ----------
 function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
@@ -93,10 +95,44 @@ function renderAll() {
 
   document.getElementById("manifestTitle").textContent = `This week's manifest \u2014 ${money(collected)} of ${money(expected)} collected`;
 
+  renderBalance();
   renderManifest(thisWeekPayments, weekISO);
   renderWeekExpenses(thisWeekExpenses);
   renderDrivers();
   renderAllExpenses();
+}
+
+function computeBalance() {
+  const adjTotal = adjustments.reduce((s, a) => s + Number(a.amount || 0), 0);
+  const allCollected = payments.reduce((s, p) => s + Number(p.amount || 0), 0);
+  const allExpenses = expenses.reduce((s, e) => s + Number(e.amount || 0), 0);
+  return adjTotal + allCollected - allExpenses;
+}
+
+function renderBalance() {
+  const balance = computeBalance();
+  const balEl = document.getElementById("statBalance");
+  balEl.textContent = money(balance);
+  balEl.style.color = balance >= 0 ? "var(--yellow)" : "var(--rust)";
+
+  const histEl = document.getElementById("adjustmentHistory");
+  if (adjustments.length === 0) {
+    histEl.innerHTML = "";
+    return;
+  }
+  const sorted = [...adjustments].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 4);
+  histEl.innerHTML = `<div class="adjust-list">${sorted.map((a) => `
+    <div class="adjust-row">
+      <div class="flex-gap">
+        <span style="font-size:13px;">${esc(a.note || "Balance adjustment")}</span>
+      </div>
+      <div class="flex-gap">
+        <span class="font-mono" style="font-size:13px; color:${Number(a.amount) >= 0 ? "var(--green)" : "var(--rust)"}; font-weight:600;">${Number(a.amount) >= 0 ? "+" : ""}${money(a.amount)}</span>
+        <button class="btn-icon" onclick="removeAdjustment('${a.id}')" style="color:#8F897E;">
+          ${iconSvg('<path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6h12z"/>', "#8F897E", 13)}
+        </button>
+      </div>
+    </div>`).join("")}</div>`;
 }
 
 function renderManifest(thisWeekPayments, weekISO) {
@@ -261,6 +297,17 @@ function removeExpense(id) {
   persistExpenses();
   renderAll();
 }
+function addAdjustment(signedAmount, note, date) {
+  adjustments.push({ id: uid(), amount: Number(signedAmount) || 0, note: note || "", date: date || fmtISO(new Date()) });
+  persistAdjustments();
+  closeModal();
+  renderAll();
+}
+function removeAdjustment(id) {
+  adjustments = adjustments.filter((a) => a.id !== id);
+  persistAdjustments();
+  renderAll();
+}
 
 // ---------- modals ----------
 function closeModal() { document.getElementById("modalRoot").innerHTML = ""; }
@@ -366,6 +413,45 @@ function submitExpense() {
   const note = document.getElementById("f-note").value.trim();
   if (!amount) return;
   addExpense(date, category, amount, note);
+}
+
+function openAdjustModal() {
+  const root = document.getElementById("modalRoot");
+  const isFirst = adjustments.length === 0 && payments.length === 0 && expenses.length === 0;
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title font-display">Adjust balance</div>
+          <button class="btn-icon" onclick="closeModal()">${iconSvg('<path d="M18 6L6 18M6 6l12 12"/>', "#8F897E", 20)}</button>
+        </div>
+        <div class="field">
+          <div class="field-label font-mono">DIRECTION</div>
+          <select id="f-direction">
+            <option value="add">Add money (e.g. starting cash, a correction)</option>
+            <option value="deduct">Deduct money (e.g. a mistake to reverse)</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label font-mono">AMOUNT</div>
+          <input id="f-amount" type="number" placeholder="0" />
+        </div>
+        <div class="field">
+          <div class="field-label font-mono">NOTE</div>
+          <input id="f-note" placeholder="${isFirst ? "e.g. Starting balance" : "e.g. Correction"}" value="${isFirst ? "Starting balance" : ""}" />
+        </div>
+        <button class="btn btn-yellow" onclick="submitAdjustment()">Save</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("f-amount").focus();
+}
+function submitAdjustment() {
+  const dir = document.getElementById("f-direction").value;
+  const amt = Number(document.getElementById("f-amount").value);
+  const note = document.getElementById("f-note").value.trim();
+  if (!amt) return;
+  addAdjustment(dir === "deduct" ? -Math.abs(amt) : Math.abs(amt), note);
 }
 
 // ---------- init ----------

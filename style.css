@@ -34,6 +34,16 @@ body{
 .tab{ display:none; }
 .tab.active{ display:block; }
 
+/* balance card */
+.balance-card{ background:linear-gradient(135deg, var(--panel), var(--panel-alt)); border:1px solid var(--hairline); border-radius:14px; padding:18px 18px 16px; margin-bottom:16px; }
+.balance-label{ font-size:11px; color:var(--muted); letter-spacing:0.5px; margin-bottom:6px; }
+.balance-value{ font-size:34px; font-weight:600; color:var(--yellow); line-height:1; }
+.balance-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+.balance-note{ font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+
+.adjust-list{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+.adjust-row{ display:flex; align-items:center; justify-content:space-between; background:var(--panel-alt); border-radius:8px; padding:8px 12px; }
+
 /* stat cards */
 .stat-row{ display:flex; gap:10px; margin-bottom:18px; }
 .stat-card{ background:var(--panel); border:1px solid var(--hairline); border-radius:10px; padding:12px 14px; flex:1; }
