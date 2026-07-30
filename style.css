@@ -114,3 +114,23 @@ input:focus, select:focus{ border-color:var(--yellow); }
 .modal .btn-yellow:disabled{ opacity:0.5; cursor:not-allowed; }
 
 ::-webkit-scrollbar{ display:none; }
+
+/* wage card */
+.wage-card{ background:var(--panel); border:1px solid var(--hairline); border-radius:14px; padding:16px 18px; margin-bottom:12px; }
+.wage-value{ font-size:26px; font-weight:600; color:var(--green); line-height:1; margin-top:2px; }
+
+/* week strip */
+.week-strip{ background:var(--panel-alt); border-radius:8px; padding:9px 14px; font-size:12px; color:var(--muted); margin-bottom:18px; }
+
+/* bike cost breakdown */
+.bike-cost-row{ display:flex; align-items:center; justify-content:space-between; background:var(--panel-alt); border-radius:8px; padding:10px 12px; margin-bottom:6px; }
+.bike-cost-bar-track{ height:4px; background:var(--hairline); border-radius:2px; margin-top:6px; overflow:hidden; }
+.bike-cost-bar-fill{ height:100%; background:var(--yellow); border-radius:2px; }
+
+/* expense groups */
+.expense-group{ margin-bottom:20px; }
+.expense-group-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.expense-group-title{ font-size:13px; font-weight:600; }
+.expense-group-total{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); }
+
+.pill{ display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 7px; border-radius:20px; background:var(--panel-alt); color:var(--muted); }

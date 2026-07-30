@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>Fleet Ledger</title>
 
-<!-- PWA / home screen -->
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#17181A" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -20,7 +19,6 @@
 <body>
 <div id="app">
 
-  <!-- Header -->
   <div class="header">
     <div class="header-row">
       <div class="logo">
@@ -31,38 +29,49 @@
     <div class="week-label font-mono" id="weekLabel">WEEK OF —</div>
   </div>
 
-  <!-- Content -->
   <div class="content">
 
+    <!-- DASHBOARD -->
     <div class="tab active" id="tab-dashboard">
 
       <div class="balance-card">
         <div class="balance-label font-mono">TOTAL BALANCE</div>
         <div class="balance-value font-mono" id="statBalance">$0</div>
         <div class="balance-foot">
-          <span class="balance-note" id="balanceFormula">starting + collected \u2212 expenses</span>
-          <button class="link-btn" onclick="openAdjustModal()">Adjust balance \u2192</button>
+          <span class="balance-note font-mono" id="balanceFormula">starting + collected − expenses − wages</span>
+          <button class="link-btn" onclick="openAdjustModal()">Adjust →</button>
         </div>
       </div>
       <div id="adjustmentHistory"></div>
 
-      <div class="section-title font-display" style="margin-top:4px;">This week</div>
-      <div class="stat-row">
-        <div class="stat-card"><div class="stat-label font-mono">COLLECTED</div><div class="stat-value font-mono up" id="statCollected">$0</div></div>
-        <div class="stat-card"><div class="stat-label font-mono">EXPENSES</div><div class="stat-value font-mono down" id="statExpenses">$0</div></div>
-        <div class="stat-card"><div class="stat-label font-mono">NET</div><div class="stat-value font-mono" id="statNet">$0</div></div>
+      <div class="wage-card">
+        <div class="row-between" style="align-items:flex-start;">
+          <div>
+            <div class="balance-label font-mono">AVAILABLE TO WITHDRAW</div>
+            <div class="wage-value font-mono" id="statWageAvailable">$0</div>
+            <div class="mono-muted" id="wageInfo" style="margin-top:4px;">Set your salary to start accruing</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <button class="btn btn-yellow" onclick="openWithdrawModal()">Withdraw</button>
+            <button class="link-btn" onclick="openWageSettingsModal()">Wage settings</button>
+          </div>
+        </div>
       </div>
+      <div id="withdrawHistory"></div>
+
+      <div class="week-strip font-mono" id="weekStrip">This week: $0 collected · $0 spent · net $0</div>
 
       <div class="section-title font-display" id="manifestTitle">This week's manifest</div>
       <div id="manifestList"></div>
 
       <div class="section-head">
-        <div class="section-title font-display" style="margin:0;">Expenses this week</div>
+        <div class="section-title font-display" style="margin:0;">Cost by bike</div>
         <button class="link-btn" onclick="goTab('expenses')">View all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <div id="weekExpenseList" style="margin-top:8px;"></div>
+      <div id="bikeCostList" style="margin-top:8px;"></div>
     </div>
 
+    <!-- TEAM -->
     <div class="tab" id="tab-drivers">
       <div class="btn-row">
         <div class="section-title font-display" style="margin:0;">Roster</div>
@@ -71,8 +80,17 @@
         </button>
       </div>
       <div id="driversList"></div>
+
+      <div class="btn-row" style="margin-top:26px;">
+        <div class="section-title font-display" style="margin:0;">Bikes</div>
+        <button class="btn btn-yellow" onclick="openBikeModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-3px;margin-right:4px;"><path d="M12 5v14M5 12h14"/></svg>Add bike
+        </button>
+      </div>
+      <div id="bikesList"></div>
     </div>
 
+    <!-- EXPENSES -->
     <div class="tab" id="tab-expenses">
       <div class="btn-row" style="margin-bottom:4px;">
         <div class="section-title font-display" style="margin:0;">Expenses</div>
@@ -81,12 +99,11 @@
         </button>
       </div>
       <div class="mono-muted" id="expenseTotal" style="margin-bottom:14px;">ALL-TIME TOTAL: $0</div>
-      <div id="allExpenseList"></div>
+      <div id="expenseGroups"></div>
     </div>
 
   </div>
 
-  <!-- Bottom nav -->
   <div class="bottom-nav">
     <button class="nav-btn active" id="nav-dashboard" onclick="goTab('dashboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
@@ -94,7 +111,7 @@
     </button>
     <button class="nav-btn" id="nav-drivers" onclick="goTab('drivers')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <span>DRIVERS</span>
+      <span>TEAM</span>
     </button>
     <button class="nav-btn" id="nav-expenses" onclick="goTab('expenses')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 2h16v20l-3-2-3 2-3-2-3 2-3-2-1 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
